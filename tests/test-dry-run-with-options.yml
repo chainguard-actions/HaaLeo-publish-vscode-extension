@@ -1,0 +1,43 @@
+name: Test dry-run with optional flags
+on:
+  workflow_dispatch:
+
+jobs:
+  test-dry-run-options:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - id: publish
+        uses: .
+        with:
+          pat: fake-pat-for-dry-run
+          packagePath: ${{ github.workspace }}/tests/fixtures/vscode-ext
+          dryRun: true
+          noVerify: true
+          skipDuplicate: true
+          preRelease: false
+          dependencies: false
+          registryUrl: 'https://open-vsx.org'
+
+      - name: Assert vsixPath output is set
+        env:
+          VSIX_PATH: ${{ steps.publish.outputs.vsixPath }}
+        run: |
+          echo "vsixPath: $VSIX_PATH"
+          if [ -z "$VSIX_PATH" ]; then
+            echo "FAIL: vsixPath output is empty"
+            exit 1
+          fi
+          echo "PASS: vsixPath is set to $VSIX_PATH"
+
+      - name: Assert vsix file exists on disk
+        env:
+          VSIX_PATH: ${{ steps.publish.outputs.vsixPath }}
+        run: |
+          echo "Checking for vsix file at: $VSIX_PATH"
+          if [ ! -f "$VSIX_PATH" ]; then
+            echo "FAIL: vsix file not found at $VSIX_PATH"
+            exit 1
+          fi
+          echo "PASS: vsix file exists"

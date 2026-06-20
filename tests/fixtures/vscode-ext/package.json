@@ -1,0 +1,17 @@
+{
+  "name": "test-extension",
+  "displayName": "Test Extension",
+  "description": "A minimal test VS Code extension for CI testing.",
+  "version": "0.0.1",
+  "publisher": "test-publisher",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./extension.js",
+  "contributes": {},
+  "license": "MIT"
+}

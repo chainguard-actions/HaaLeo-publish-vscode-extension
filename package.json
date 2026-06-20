@@ -1,0 +1,62 @@
+{
+  "name": "publish-vscode-extension",
+  "version": "1.6.2",
+  "description": "GitHub action to publish your VS Code Extension to the Open VSX Registry.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "nyc mocha 'out/test/**/*.test.js'",
+    "coverage": "nyc report --reporter=lcov",
+    "build": "npm run build:ncc && npm run build:test",
+    "build:ncc": "ncc build src/index.ts --source-map --no-source-map-register",
+    "build:test": "tsc -p tsconfig.json",
+    "lint": "eslint . --ext .ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HaaLeo/publish-vscode-extension.git"
+  },
+  "keywords": [
+    "github",
+    "action",
+    "open",
+    "vsx",
+    "vscode",
+    "publish",
+    "Visual Studio Code"
+  ],
+  "author": {
+    "name": "HaaLeo",
+    "url": "https://github.com/HaaLeo"
+  },
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "bugs": {
+    "url": "https://github.com/HaaLeo/publish-vscode-extension/issues"
+  },
+  "homepage": "https://github.com/HaaLeo/publish-vscode-extension#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@vscode/vsce": "~2.22.0",
+    "ovsx": "^0.8.3"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/chai-as-promised": "^7.1.4",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^16.11.26",
+    "@types/sinon": "^10.0.6",
+    "@types/sinon-chai": "^3.2.6",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "@vercel/ncc": "^0.38.0",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^8.4.1",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prefer-arrow": "^1.2.3",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "sinon": "^16.0.0",
+    "sinon-chai": "^3.7.0",
+    "typescript": "^5.0.3"
+  }
+}

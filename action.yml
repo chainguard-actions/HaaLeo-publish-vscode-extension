@@ -1,0 +1,64 @@
+name: 'Publish VS Code Extension'
+description: 'Publish your VSCode extension to the VS Marketplace (using vsce) or the Open VSX Registry (using ovsx) with ease.'
+author: HaaLeo
+branding:
+  color: blue
+  icon: package
+inputs:
+  # Required
+  pat:
+    description: 'Personal access token.'
+    required: true
+  # Optional
+  extensionFile:
+    description: 'Path to the vsix file to be published. Cannot be used together with packagePath.'
+    required: false
+  registryUrl:
+    description: 'Use the registry API at this base URL.'
+    required: false
+    default: 'https://open-vsx.org'
+  packagePath:
+    description: 'Path to the extension to be packaged and published. Cannot be used together with extensionFile.'
+    required: false
+    default: ./
+  baseContentUrl:
+    description: 'Prepend all relative links in README.md with this URL.'
+    required: false
+  baseImagesUrl:
+    description: 'Prepend all relative image links in README.md with this URL.'
+    required: false
+  yarn:
+    description: Use yarn instead of npm while packing extension files.
+    required: false
+    default: false
+  dryRun:
+    description: 'Set this option to "true" to package your extension but do not publish it.'
+    required: false
+    default: false
+  noVerify:
+    description: 'Allow publishing extensions to the visual studio marketplace which use a proposed API (enableProposedApi: true).'
+    required: false
+    default: false
+  preRelease:
+    description: 'Publish a version marked as a Pre-Release.'
+    required: false
+    default: false
+  dependencies:
+    description: 'Check that dependencies defined in package.json exist in node_modules. Set to false if using pnpm or yarn v2+ with pnp.'
+    required: false
+    default: true
+  skipDuplicate:
+    description: 'Fail silently if version already exists on the marketplace.'
+    required: false
+    default: false
+  target:
+    description: 'Target architecture(s) the extension should run on.'
+    required: false
+    default: ''
+outputs:
+  vsixPath:
+    description: The path to the packaged and published VSIX file.
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
+  pre: chainguard-phonehome.js
