@@ -9,6 +9,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
 | v1.6.2 | [`v1.6.2`](https://github.com/chainguard-actions/HaaLeo-publish-vscode-extension/tree/v1.6.2) | [`28e2d3f`](https://github.com/HaaLeo/publish-vscode-extension/commit/28e2d3f5817fccf23c1f219eb0cecc903132d1a2) |
+| v2 | [`v2`](https://github.com/chainguard-actions/HaaLeo-publish-vscode-extension/tree/v2) | [`ca5561d`](https://github.com/HaaLeo/publish-vscode-extension/commit/ca5561daa085dee804bf9f37fe0165785a9b14db) |
 
 ## Privacy
 
