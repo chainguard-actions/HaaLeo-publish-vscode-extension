@@ -1,0 +1,67 @@
+name: Test dry-run with packagePath input
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install vsce dependencies for the fixture extension
+        run: |
+          cd "$GITHUB_WORKSPACE/tests/fixtures/vscode-extension"
+          npm install --save-dev @vscode/vsce 2>/dev/null || true
+
+      - id: action
+        uses: .
+        with:
+          pat: fake-pat-for-dry-run
+          packagePath: ${{ github.workspace }}/tests/fixtures/vscode-extension
+          dryRun: 'true'
+          registryUrl: 'https://open-vsx.org'
+          dependencies: 'false'
+
+      - name: Assert vsixPath output is set
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "actual vsixPath: $ACTUAL"
+          if [ -z "$ACTUAL" ]; then
+            echo "FAIL: vsixPath output is empty"
+            exit 1
+          fi
+          echo "PASS: vsixPath is set to '$ACTUAL'"
+
+      - name: Assert vsixPath ends with .vsix
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "actual vsixPath: $ACTUAL"
+          if [[ "$ACTUAL" != *.vsix ]]; then
+            echo "FAIL: expected vsixPath to end with .vsix but got '$ACTUAL'"
+            exit 1
+          fi
+          echo "PASS: vsixPath ends with .vsix"
+
+      - name: Assert vsixPath contains extension name and version
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "actual vsixPath: $ACTUAL"
+          if [[ "$ACTUAL" != *test-extension-0.0.1.vsix ]]; then
+            echo "FAIL: expected vsixPath to contain 'test-extension-0.0.1.vsix' but got '$ACTUAL'"
+            exit 1
+          fi
+          echo "PASS: vsixPath contains expected extension name and version"
+
+      - name: Assert VSIX file was created on disk
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "checking if VSIX file exists at: $ACTUAL"
+          if [ ! -f "$ACTUAL" ]; then
+            echo "FAIL: VSIX file does not exist at '$ACTUAL'"
+            exit 1
+          fi
+          echo "PASS: VSIX file exists at '$ACTUAL'"

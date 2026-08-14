@@ -1,0 +1,66 @@
+name: Test extensionFile dry-run
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # First, package the extension using the action itself (dry-run)
+      - id: package
+        uses: .
+        with:
+          pat: fake-pat-for-dry-run
+          packagePath: ${{ github.workspace }}/tests/fixtures/minimal-extension
+          dryRun: 'true'
+          dependencies: 'false'
+          noVerify: 'true'
+
+      - name: Verify package step produced a vsix
+        env:
+          VSIX_PATH: ${{ steps.package.outputs.vsixPath }}
+        run: |
+          echo "Package step vsixPath: $VSIX_PATH"
+          if [ ! -f "$VSIX_PATH" ]; then
+            echo "FAIL: vsix file from package step does not exist"
+            exit 1
+          fi
+          echo "PASS: vsix file exists at $VSIX_PATH"
+
+      # Now use the packaged VSIX as extensionFile input
+      - id: action
+        uses: .
+        with:
+          pat: fake-pat-for-dry-run
+          extensionFile: ${{ steps.package.outputs.vsixPath }}
+          dryRun: 'true'
+
+      - name: Assert vsixPath output matches extensionFile
+        env:
+          VSIX_PATH: ${{ steps.action.outputs.vsixPath }}
+          EXPECTED: ${{ steps.package.outputs.vsixPath }}
+        run: |
+          echo "vsixPath: $VSIX_PATH"
+          echo "expected: $EXPECTED"
+          if [ -z "$VSIX_PATH" ]; then
+            echo "FAIL: vsixPath output is empty"
+            exit 1
+          fi
+          if [ "$VSIX_PATH" != "$EXPECTED" ]; then
+            echo "FAIL: expected vsixPath '$EXPECTED', got '$VSIX_PATH'"
+            exit 1
+          fi
+          echo "PASS: vsixPath matches extensionFile input"
+
+      - name: Assert vsix file still exists
+        env:
+          VSIX_PATH: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "Checking for vsix file at: $VSIX_PATH"
+          if [ ! -f "$VSIX_PATH" ]; then
+            echo "FAIL: vsix file does not exist at $VSIX_PATH"
+            exit 1
+          fi
+          echo "PASS: vsix file exists"

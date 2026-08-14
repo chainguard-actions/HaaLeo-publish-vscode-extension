@@ -1,0 +1,46 @@
+name: Test pre-release dry-run with extensionFile
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create a fake VSIX file for testing
+        run: |
+          mkdir -p /tmp/test-vsix-prerelease
+          echo "fake vsix content for pre-release" > /tmp/test-vsix-prerelease/my-ext-1.0.0.vsix
+
+      - id: action
+        uses: .
+        with:
+          pat: fake-pat-for-dry-run
+          extensionFile: /tmp/test-vsix-prerelease/my-ext-1.0.0.vsix
+          dryRun: 'true'
+          preRelease: 'true'
+          registryUrl: 'https://open-vsx.org'
+
+      - name: Assert vsixPath output is set
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "actual vsixPath: $ACTUAL"
+          if [ -z "$ACTUAL" ]; then
+            echo "FAIL: vsixPath output is empty"
+            exit 1
+          fi
+          echo "PASS: vsixPath is set to '$ACTUAL'"
+
+      - name: Assert vsixPath matches the provided extensionFile
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "actual vsixPath: $ACTUAL"
+          EXPECTED="/tmp/test-vsix-prerelease/my-ext-1.0.0.vsix"
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "FAIL: expected vsixPath='$EXPECTED' but got '$ACTUAL'"
+            exit 1
+          fi
+          echo "PASS: vsixPath matches the provided extensionFile for pre-release dry-run"
