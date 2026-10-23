@@ -1,0 +1,7 @@
+{
+  "name": "invalid-ext",
+  "publisher": "test-publisher",
+  "engines": {
+    "vscode": "^1.80.0"
+  }
+}

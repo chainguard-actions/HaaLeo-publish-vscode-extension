@@ -1,0 +1,19 @@
+{
+  "name": "readme-links-ext",
+  "displayName": "Readme Links Ext",
+  "description": "A minimal sample extension used for testing README link rewriting.",
+  "version": "0.0.1",
+  "publisher": "test-publisher",
+  "license": "MIT",
+  "main": "./extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HaaLeo/publish-vscode-extension.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ]
+}

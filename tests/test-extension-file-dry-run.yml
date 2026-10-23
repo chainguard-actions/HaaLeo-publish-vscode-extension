@@ -1,0 +1,32 @@
+name: Test pre-packaged extensionFile with dry run
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create a pre-packaged vsix placeholder
+        run: |
+          mkdir -p prepackaged
+          echo "placeholder" > prepackaged/my-ext-1.2.3.vsix
+      - id: action
+        uses: .
+        with:
+          pat: dummy-pat-not-used-in-dry-run
+          extensionFile: prepackaged/my-ext-1.2.3.vsix
+          dryRun: 'true'
+      - name: Assert vsixPath equals extensionFile
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "actual: $ACTUAL"
+          if [ "$ACTUAL" != "prepackaged/my-ext-1.2.3.vsix" ]; then
+            echo "FAIL: expected vsixPath to equal extensionFile"
+            exit 1
+          fi
+          if [ "$(cat prepackaged/my-ext-1.2.3.vsix)" != "placeholder" ]; then
+            echo "FAIL: extension file was modified"
+            exit 1
+          fi
+          echo "PASS"

@@ -1,0 +1,49 @@
+name: Test dry run packaging
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Clean any previous vsix
+        run: rm -f tests/fixtures/sample-extension/*.vsix
+      - id: action
+        uses: .
+        with:
+          pat: dummy-pat-not-used-in-dry-run
+          packagePath: tests/fixtures/sample-extension
+          dryRun: 'true'
+          dependencies: 'false'
+      - name: Assert vsixPath output
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "actual: $ACTUAL"
+          if [ "$ACTUAL" != "tests/fixtures/sample-extension/sample-ext-0.0.1.vsix" ]; then
+            echo "FAIL: unexpected vsixPath"
+            exit 1
+          fi
+          echo "PASS"
+      - name: Assert vsix file exists and is a valid package
+        env:
+          VSIX: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          if [ ! -s "$VSIX" ]; then
+            echo "FAIL: vsix file not created at $VSIX"
+            exit 1
+          fi
+          python3 - "$VSIX" <<'EOF'
+          import sys, zipfile, json
+          z = zipfile.ZipFile(sys.argv[1])
+          names = z.namelist()
+          print(names)
+          if 'extension/package.json' not in names or 'extension.vsixmanifest' not in names:
+              print("FAIL: vsix missing expected entries")
+              sys.exit(1)
+          pkg = json.loads(z.read('extension/package.json'))
+          if pkg.get('name') != 'sample-ext' or pkg.get('version') != '0.0.1':
+              print("FAIL: unexpected package.json in vsix")
+              sys.exit(1)
+          print("PASS")
+          EOF

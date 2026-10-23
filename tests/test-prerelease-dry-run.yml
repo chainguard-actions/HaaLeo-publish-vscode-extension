@@ -1,0 +1,41 @@
+name: Test pre-release dry run packaging
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Clean any previous vsix
+        run: rm -f tests/fixtures/sample-extension/*.vsix
+      - id: action
+        uses: .
+        with:
+          pat: dummy-pat-not-used-in-dry-run
+          packagePath: tests/fixtures/sample-extension
+          dryRun: 'true'
+          preRelease: 'true'
+          dependencies: 'false'
+      - name: Assert vsix is marked pre-release
+        env:
+          VSIX: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "vsixPath: $VSIX"
+          if [ "$VSIX" != "tests/fixtures/sample-extension/sample-ext-0.0.1.vsix" ]; then
+            echo "FAIL: unexpected vsixPath"
+            exit 1
+          fi
+          if [ ! -s "$VSIX" ]; then
+            echo "FAIL: vsix not created"
+            exit 1
+          fi
+          python3 - "$VSIX" <<'EOF'
+          import sys, zipfile
+          z = zipfile.ZipFile(sys.argv[1])
+          manifest = z.read('extension.vsixmanifest').decode()
+          print(manifest)
+          if 'Microsoft.VisualStudio.Code.PreRelease' not in manifest:
+              print("FAIL: manifest not marked as pre-release")
+              sys.exit(1)
+          print("PASS")
+          EOF

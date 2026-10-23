@@ -1,0 +1,27 @@
+{
+  "name": "sample-ext",
+  "displayName": "Sample Ext",
+  "description": "A minimal sample extension used for testing packaging.",
+  "version": "0.0.1",
+  "publisher": "test-publisher",
+  "license": "MIT",
+  "main": "./extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HaaLeo/publish-vscode-extension.git"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "sampleExt.hello",
+        "title": "Sample Ext: Hello"
+      }
+    ]
+  }
+}
