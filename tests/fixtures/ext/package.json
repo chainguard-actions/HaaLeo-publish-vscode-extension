@@ -1,0 +1,19 @@
+{
+  "name": "act-test-extension",
+  "displayName": "Act Test Extension",
+  "description": "Minimal extension used to test publish-vscode-extension packaging.",
+  "version": "1.2.3",
+  "publisher": "act-test-publisher",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HaaLeo/publish-vscode-extension.git"
+  },
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "contributes": {}
+}

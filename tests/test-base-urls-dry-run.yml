@@ -1,42 +1,43 @@
-name: Test baseContentUrl and baseImagesUrl dry-run
+name: Test baseContentUrl and baseImagesUrl rewrite README links
 on:
   workflow_dispatch:
-
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
+      - name: Clean any stale vsix
+        run: rm -f tests/fixtures/ext-links/*.vsix
       - id: action
         uses: .
         with:
-          pat: fake-pat-for-dry-run
-          packagePath: ${{ github.workspace }}/tests/fixtures/minimal-extension
-          dryRun: 'true'
-          dependencies: 'false'
-          noVerify: 'true'
-          baseContentUrl: 'https://example.com/content'
-          baseImagesUrl: 'https://example.com/images'
-
-      - name: Assert vsixPath output is set
+          pat: dummy-marketplace-pat-not-used-in-dry-run
+          packagePath: tests/fixtures/ext-links
+          baseContentUrl: https://example.com/content
+          baseImagesUrl: https://example.com/images
+          dryRun: "true"
+      - name: Assert vsix created and README links rewritten
         env:
-          VSIX_PATH: ${{ steps.action.outputs.vsixPath }}
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
         run: |
-          echo "vsixPath: $VSIX_PATH"
-          if [ -z "$VSIX_PATH" ]; then
-            echo "FAIL: vsixPath output is empty"
+          echo "actual: $ACTUAL"
+          if [ "$ACTUAL" != "tests/fixtures/ext-links/act-links-extension-2.0.0.vsix" ]; then
+            echo "FAIL: unexpected vsixPath"
             exit 1
           fi
-          echo "PASS: vsixPath is set to $VSIX_PATH"
-
-      - name: Assert vsix file exists on disk
-        env:
-          VSIX_PATH: ${{ steps.action.outputs.vsixPath }}
-        run: |
-          echo "Checking for vsix file at: $VSIX_PATH"
-          if [ ! -f "$VSIX_PATH" ]; then
-            echo "FAIL: vsix file does not exist at $VSIX_PATH"
+          if [ ! -s "$ACTUAL" ]; then
+            echo "FAIL: vsix file not created"
             exit 1
           fi
-          echo "PASS: vsix file exists"
+          README="$(unzip -p "$ACTUAL" extension/README.md)"
+          echo "packaged README:"
+          echo "$README"
+          if ! echo "$README" | grep -q "https://example.com/content/docs/guide.md"; then
+            echo "FAIL: baseContentUrl not applied"
+            exit 1
+          fi
+          if ! echo "$README" | grep -q "https://example.com/images/images/logo.png"; then
+            echo "FAIL: baseImagesUrl not applied"
+            exit 1
+          fi
+          echo "PASS"

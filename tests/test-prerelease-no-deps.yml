@@ -1,0 +1,38 @@
+name: Test pre-release dry run without dependency check
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Clean any stale vsix
+        run: rm -f tests/fixtures/ext-prerelease/*.vsix
+      - id: action
+        uses: .
+        with:
+          pat: dummy-marketplace-pat-not-used-in-dry-run
+          packagePath: tests/fixtures/ext-prerelease
+          preRelease: "true"
+          dependencies: "false"
+          dryRun: "true"
+      - name: Assert pre-release vsix produced
+        env:
+          ACTUAL: ${{ steps.action.outputs.vsixPath }}
+        run: |
+          echo "actual: $ACTUAL"
+          if [ "$ACTUAL" != "tests/fixtures/ext-prerelease/act-test-prerelease-extension-2.0.1.vsix" ]; then
+            echo "FAIL: unexpected vsixPath"
+            exit 1
+          fi
+          if [ ! -s "$ACTUAL" ]; then
+            echo "FAIL: vsix not created"
+            exit 1
+          fi
+          MANIFEST="$(unzip -p "$ACTUAL" extension.vsixmanifest)"
+          echo "$MANIFEST"
+          if ! echo "$MANIFEST" | grep -q 'Microsoft.VisualStudio.Code.PreRelease'; then
+            echo "FAIL: manifest not marked as pre-release"
+            exit 1
+          fi
+          echo "PASS"
