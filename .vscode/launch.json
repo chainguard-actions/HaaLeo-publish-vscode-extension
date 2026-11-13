@@ -1,0 +1,63 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/dist/index.js",
+            "outFiles": [
+                "${workspaceFolder}/dist/*.js"
+            ],
+            "sourceMaps": true,
+            "preLaunchTask": "npm: build:ncc",
+            "env": {
+                "INPUT_PAT": "test-pat",
+                "INPUT_REGISTRYURL": "https://marketplace.visualstudio.com",
+                // "INPUT_REGISTRYURL": "https://open-vsx.org",
+                "INPUT_PACKAGEPATH": "../vscode-timing",
+                "INPUT_YARN": "false",
+                "INPUT_EXTENSIONFILE": "",
+                "INPUT_BASECONTENTURL": "",
+                "INPUT_BASEIMAGESURL": "",
+                "INPUT_DRYRUN": "true"
+            },
+            "outputCapture": "std"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha All",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--timeout",
+                "999999",
+                "--colors",
+                "${workspaceFolder}/out/test"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "sourceMaps": true,
+            "preLaunchTask": "npm: build:test"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Mocha Current File",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--timeout",
+                "999999",
+                "--colors",
+                "${workspaceFolder}/out/test/${fileBasenameNoExtension}.js"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "preLaunchTask": "npm: build:test",
+            "sourceMaps": true
+        }
+    ]
+}

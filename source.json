@@ -1,6 +1,21 @@
 {
   "owner": "HaaLeo",
   "repo": "publish-vscode-extension",
-  "version": "",
-  "url": "https://github.com/HaaLeo/publish-vscode-extension"
+  "version": "v2.0.0",
+  "commit_sha": "ca5561daa085dee804bf9f37fe0165785a9b14db",
+  "url": "https://github.com/HaaLeo/publish-vscode-extension",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
+  "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
+  "test_agent_version": "2",
+  "harden_agent_version": "2",
+  "node_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/node-artifacts/HaaLeo/publish-vscode-extension/v2.0.0/sha256-564be6446e7e76d9849ec7446656ea17cac68cd7c112b938dd91eb7865cb90c0.tar.gz",
+    "sha256": "564be6446e7e76d9849ec7446656ea17cac68cd7c112b938dd91eb7865cb90c0",
+    "size_bytes": 15561837
+  },
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/HaaLeo/publish-vscode-extension/v2.0.0/sha256-23a9eadcd1f550a7c1b516a14f1cdf3b5ee453661af089ca8a380e675a58a437.tar.gz",
+    "sha256": "23a9eadcd1f550a7c1b516a14f1cdf3b5ee453661af089ca8a380e675a58a437",
+    "size_bytes": 3356855
+  }
 }
