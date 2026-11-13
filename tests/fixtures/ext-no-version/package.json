@@ -1,7 +1,0 @@
-{
-  "name": "act-test-extension-broken",
-  "publisher": "act-test-publisher",
-  "engines": {
-    "vscode": "^1.60.0"
-  }
-}
